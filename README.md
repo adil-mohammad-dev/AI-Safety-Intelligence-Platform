@@ -441,15 +441,6 @@ backend/
 
 ---
 
-## Resume Highlights
-
-- Built an AI-powered workplace safety intelligence platform using FastAPI, React.js, PostgreSQL, OpenCV, YOLOv3-Tiny, and Groq API to analyze uploaded videos and detect restricted-zone safety incidents.
-- Developed a hybrid computer vision pipeline that extracts video metadata, samples frames using OpenCV, runs YOLOv3-Tiny object detection, applies OpenCV HOG fallback detection, and creates incidents based on restricted-zone rule evaluation.
-- Integrated Groq API to generate professional AI-based incident reports with risk analysis, recommended actions, incident summaries, and downloadable report output.
-- Designed a React dashboard with JWT-secured authentication, video upload/analysis workflow, incident resolution, severity breakdown, recent incidents, and AI report viewing.
-
----
-
 ## Project Status
 
 MVP completed with advanced AI pipeline upgrades.
