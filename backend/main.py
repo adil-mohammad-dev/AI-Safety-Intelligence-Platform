@@ -21,7 +21,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    description="AI-powered workplace safety monitoring platform"
+    description="AI-powered workplace safety monitoring platform",
 )
 
 app.add_middleware(
@@ -35,7 +35,9 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
+
 
 app.include_router(auth_router)
 app.include_router(video_router)
@@ -48,7 +50,7 @@ app.include_router(report_router)
 def root():
     return {
         "status": "running",
-        "message": "Safety Intelligence Platform Backend Running"
+        "message": "Safety Intelligence Platform Backend Running",
     }
 
 
@@ -56,5 +58,5 @@ def root():
 def health_check():
     return {
         "server": "healthy",
-        "database": "connected"
+        "database": "connected",
     }
