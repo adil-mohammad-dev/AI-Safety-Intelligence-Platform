@@ -216,9 +216,15 @@ ${report.recommended_action}
                   </p>
                 </div>
 
-                <button style={styles.downloadBtn} onClick={handleDownload}>
-                  Download Report
-                </button>
+                <div style={styles.reportActions}>
+  <button style={styles.downloadBtn} onClick={handleDownload}>
+    Download TXT
+  </button>
+
+  <button style={styles.pdfBtn} onClick={() => window.print()}>
+    Download PDF
+  </button>
+</div>
               </div>
 
               <div style={styles.reportBox}>
@@ -534,6 +540,23 @@ const styles = {
     fontWeight: "700",
     whiteSpace: "nowrap",
   },
+  reportActions: {
+  display: "flex",
+  gap: "10px",
+  alignItems: "center",
+},
+
+pdfBtn: {
+  padding: "10px 16px",
+  border: "none",
+  borderRadius: "10px",
+  background: "#2563eb",
+  color: "#fff",
+  cursor: "pointer",
+  fontSize: "15px",
+  fontWeight: "700",
+  whiteSpace: "nowrap",
+},
 
   error: {
     color: "#991b1b",

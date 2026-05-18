@@ -12,6 +12,7 @@ function Register() {
   });
 
   const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -23,14 +24,41 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
+    const payload = {
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      password: formData.password.trim(),
+    };
+
+    if (!payload.name || !payload.email || !payload.password) {
+      setIsError(true);
+      setMessage("Please fill all fields.");
+      return;
+    }
+
     try {
-      await api.post("/auth/register", formData);
+      await api.post("/auth/register", payload);
+
+      setIsError(false);
       setMessage("Registration successful. Please login.");
+
       setTimeout(() => {
         navigate("/login");
       }, 1000);
     } catch (error) {
-      setMessage("Registration failed. Email may already exist.");
+      console.log("Register error:", error.response?.data);
+
+      setIsError(true);
+
+      if (error.response?.data?.detail) {
+        if (typeof error.response.data.detail === "string") {
+          setMessage(error.response.data.detail);
+        } else {
+          setMessage("Registration failed. Please check all fields.");
+        }
+      } else {
+        setMessage("Registration failed. Email may already exist.");
+      }
     }
   };
 
@@ -40,7 +68,11 @@ function Register() {
         <h2>Create Account</h2>
         <p>Register to access the AI Safety Intelligence Platform</p>
 
-        {message && <p style={styles.message}>{message}</p>}
+        {message && (
+          <p style={isError ? styles.errorMessage : styles.successMessage}>
+            {message}
+          </p>
+        )}
 
         <input
           style={styles.input}
@@ -93,6 +125,7 @@ const styles = {
     alignItems: "center",
     background: "#f4f6f9",
   },
+
   card: {
     width: "390px",
     padding: "30px",
@@ -103,12 +136,14 @@ const styles = {
     flexDirection: "column",
     gap: "15px",
   },
+
   input: {
     padding: "12px",
     borderRadius: "8px",
     border: "1px solid #ccc",
     fontSize: "15px",
   },
+
   button: {
     padding: "12px",
     border: "none",
@@ -118,6 +153,7 @@ const styles = {
     fontSize: "16px",
     cursor: "pointer",
   },
+
   secondaryButton: {
     padding: "10px",
     border: "none",
@@ -125,8 +161,21 @@ const styles = {
     color: "#2563eb",
     cursor: "pointer",
   },
-  message: {
+
+  successMessage: {
     color: "#0f766e",
+    background: "#ecfdf5",
+    padding: "10px",
+    borderRadius: "8px",
+    fontSize: "14px",
+  },
+
+  errorMessage: {
+    color: "#991b1b",
+    background: "#fee2e2",
+    padding: "10px",
+    borderRadius: "8px",
+    fontSize: "14px",
   },
 };
 
