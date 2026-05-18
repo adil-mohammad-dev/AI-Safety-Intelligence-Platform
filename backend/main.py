@@ -1,17 +1,20 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.database import Base, engine
+
 from app.models.user_model import User
-from app.routes.auth_route import router as auth_router
 from app.models.video_model import Video
-from app.routes.video_route import router as video_router
 from app.models.incident_model import Incident
+from app.models.report_model import IncidentReport
+
+from app.routes.auth_route import router as auth_router
+from app.routes.video_route import router as video_router
 from app.routes.incident_route import router as incident_router
 from app.routes.dashboard_route import router as dashboard_router
-from app.models.report_model import IncidentReport
 from app.routes.report_route import router as report_router
-from fastapi.middleware.cors import CORSMiddleware
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -26,8 +29,9 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173",
         "http://127.0.0.1:5173",
-        "https://ai-safety-intelligence-platform.vercel.app"
+        "https://ai-safety-intelligence-platform.vercel.app",
     ],
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
