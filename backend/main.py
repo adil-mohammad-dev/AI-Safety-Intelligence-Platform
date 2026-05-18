@@ -8,12 +8,14 @@ from app.models.user_model import User
 from app.models.video_model import Video
 from app.models.incident_model import Incident
 from app.models.report_model import IncidentReport
+from app.models.zone_model import RestrictedZone
 
 from app.routes.auth_route import router as auth_router
 from app.routes.video_route import router as video_router
 from app.routes.incident_route import router as incident_router
 from app.routes.dashboard_route import router as dashboard_router
 from app.routes.report_route import router as report_router
+from app.routes.zone_route import router as zone_router
 
 
 Base.metadata.create_all(bind=engine)
@@ -44,6 +46,7 @@ app.include_router(video_router)
 app.include_router(incident_router)
 app.include_router(dashboard_router)
 app.include_router(report_router)
+app.include_router(zone_router)
 
 
 @app.get("/")

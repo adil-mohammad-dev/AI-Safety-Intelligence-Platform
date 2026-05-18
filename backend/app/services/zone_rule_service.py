@@ -12,13 +12,23 @@ def is_bbox_inside_zone(bbox, zone):
     return is_point_inside_zone(center_x, center_y, zone)
 
 
-def evaluate_restricted_zone_violation(yolo_detection_result, fallback_person_count):
-    restricted_zone = {
+def get_default_restricted_zone():
+    return {
+        "name": "Default Restricted Zone",
         "x": 500,
         "y": 150,
         "width": 500,
         "height": 450
     }
+
+
+def evaluate_restricted_zone_violation(
+    yolo_detection_result,
+    fallback_person_count,
+    restricted_zone=None
+):
+    if restricted_zone is None:
+        restricted_zone = get_default_restricted_zone()
 
     zone_violations = []
 
@@ -39,9 +49,6 @@ def evaluate_restricted_zone_violation(yolo_detection_result, fallback_person_co
                         "confidence": detection["confidence"]
                     })
 
-    # Fallback logic:
-    # If YOLO does not detect bounding boxes but OpenCV HOG detects people,
-    # we still flag monitored-zone activity as possible restricted-zone violation.
     fallback_violation = False
 
     if len(zone_violations) == 0 and fallback_person_count > 0:

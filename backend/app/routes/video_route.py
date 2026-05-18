@@ -10,6 +10,7 @@ from app.core.dependencies import get_db, get_current_user, require_roles
 from app.models.user_model import User
 from app.models.video_model import Video
 from app.models.incident_model import Incident
+from app.models.zone_model import RestrictedZone
 from app.schemas.video_schema import VideoResponse
 from app.services.zone_rule_service import evaluate_restricted_zone_violation
 from app.services.video_analysis_service import (
@@ -149,9 +150,27 @@ def analyze_video(
         yolo_persons_detected
     )
 
+    active_zone = db.query(RestrictedZone).filter(
+        RestrictedZone.user_id == current_user.id,
+        RestrictedZone.is_active == True
+    ).order_by(RestrictedZone.created_at.desc()).first()
+
+    if active_zone:
+        restricted_zone = {
+            "id": active_zone.id,
+            "name": active_zone.name,
+            "x": active_zone.x,
+            "y": active_zone.y,
+            "width": active_zone.width,
+            "height": active_zone.height
+        }
+    else:
+        restricted_zone = None
+
     zone_result = evaluate_restricted_zone_violation(
         yolo_detection_result,
-        opencv_persons_detected
+        opencv_persons_detected,
+        restricted_zone
     )
 
     created_incident = None
