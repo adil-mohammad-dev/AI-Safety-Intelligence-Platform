@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.core.dependencies import get_db, get_current_user
+from app.core.dependencies import get_db, get_current_user, require_roles
 from app.models.user_model import User
 from app.models.incident_model import Incident
 from app.models.report_model import IncidentReport
@@ -18,7 +18,7 @@ router = APIRouter(
 def generate_incident_report(
     incident_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_roles(["admin", "safety_officer"]))
 ):
     incident = db.query(Incident).filter(
         Incident.id == incident_id,
@@ -38,7 +38,6 @@ def generate_incident_report(
 
     if existing_report:
         return existing_report
-    
 
     ai_text = generate_ai_incident_report(incident)
 

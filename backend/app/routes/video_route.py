@@ -6,7 +6,7 @@ from typing import List
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException
 from sqlalchemy.orm import Session
 
-from app.core.dependencies import get_db, get_current_user
+from app.core.dependencies import get_db, get_current_user, require_roles
 from app.models.user_model import User
 from app.models.video_model import Video
 from app.models.incident_model import Incident
@@ -36,7 +36,7 @@ UPLOAD_DIR = "uploads/videos"
 def upload_video(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_roles(["admin", "safety_officer"]))
 ):
     allowed_extensions = [".mp4", ".avi", ".mov", ".mkv"]
 
@@ -86,7 +86,7 @@ def get_my_videos(
 def analyze_video(
     video_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_roles(["admin", "safety_officer"]))
 ):
     video = db.query(Video).filter(
         Video.id == video_id,
@@ -150,10 +150,9 @@ def analyze_video(
     )
 
     zone_result = evaluate_restricted_zone_violation(
-    yolo_detection_result,
-    opencv_persons_detected
-)
-    
+        yolo_detection_result,
+        opencv_persons_detected
+    )
 
     created_incident = None
 
@@ -211,7 +210,7 @@ def analyze_video(
 
 @router.get("/test-yolo")
 def test_yolo_on_frame():
-    test_image_path = "uploads/frames/8861ee4a-0947-4637-8fb4-68c6ab7d878e.jpg"
+    test_image_path = "uploads/frames/8861ee4a-947-4637-8fb4-68c6ab7d878e.jpg"
 
     result = detect_objects_in_image(test_image_path)
 

@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.core.dependencies import get_db, get_current_user
+from app.core.dependencies import get_db, get_current_user, require_roles
 from app.models.user_model import User
 from app.models.incident_model import Incident
 from app.schemas.incident_schema import IncidentCreate, IncidentResponse
@@ -19,7 +19,7 @@ router = APIRouter(
 def create_incident(
     incident: IncidentCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_roles(["admin", "safety_officer"]))
 ):
     new_incident = Incident(
         video_id=incident.video_id,
@@ -50,11 +50,12 @@ def get_my_incidents(
 
     return incidents
 
+
 @router.patch("/{incident_id}/resolve", response_model=IncidentResponse)
 def resolve_incident(
     incident_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(require_roles(["admin", "safety_officer"]))
 ):
     incident = db.query(Incident).filter(
         Incident.id == incident_id,
